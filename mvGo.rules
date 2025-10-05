@@ -1,1 +1,6 @@
-<content omitted for brevity>
+# Movies with spaces in destination
+movie1.mkv | ./Special Movies
+recording_*.mkv | ./Recorded Shows
+*.mkv | ./Other Videos
+*.jpg | ./Images
+*.txt | ./Text Files

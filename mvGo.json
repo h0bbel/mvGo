@@ -1,1 +1,12 @@
-<content omitted for brevity>
+{
+  "watch_dir": "./watch",
+  "poll_interval": 5,
+  "state_file": "mvGo.state.json",
+  "log_file": "mvGo.log",
+  "duplicate_dir": "./duplicates",
+  "syslog": {
+    "enabled": false,
+    "network": "udp",
+    "address": "127.0.0.1:514"
+  }
+}
