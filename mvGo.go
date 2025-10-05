@@ -7,7 +7,6 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"log"
-	"log/syslog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -77,7 +76,6 @@ func loadRules(path string) ([]Rule, error) {
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-		// Split on the first | only, preserving spaces in destination
 		parts := strings.SplitN(line, "|", 2)
 		if len(parts) != 2 {
 			continue
@@ -97,21 +95,7 @@ func initLogger() {
 	}
 
 	outputs := []io.Writer{os.Stdout, logFile}
-
-	if cfg.Syslog.Enabled && cfg.Syslog.Address != "" {
-		network := cfg.Syslog.Network
-		if network == "" {
-			network = "udp"
-		}
-		sysLogger, err := syslog.Dial(network, cfg.Syslog.Address, syslog.LOG_INFO|syslog.LOG_USER, "mvGo")
-		if err == nil {
-			outputs = append(outputs, sysLogger)
-		} else {
-			fmt.Println("Warning: failed to connect to syslog:", err)
-		}
-	}
-
-	logger = log.New(io.MultiWriter(outputs...), "", log.LstdFlags)
+	logger = newLogger(outputs, cfg.Syslog)
 }
 
 func loadState() {
@@ -183,7 +167,6 @@ func main() {
 
 			base := filepath.Base(path)
 
-			// Already processed file
 			if _, exists := state.Processed[path]; exists {
 				if cfg.DuplicateDir != "" {
 					dst := filepath.Join(cfg.DuplicateDir, base)
